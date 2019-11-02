@@ -1795,3 +1795,7 @@ h1, h2, h3, h4, h5,
   overflow-y: auto;
   max-height: 14.5rem;
 }
+
+#relationPlot {
+  height: 25rem;
+}

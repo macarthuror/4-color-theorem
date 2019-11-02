@@ -378,36 +378,60 @@ const app = new Vue({
     el: "#myApp",
     data() {
         return {
+			valid: false,
 			numNodes: 0,
-			edges: {},
-			nodes: []
+			edges: [],
+			nodes: [],
+			relations: [],
+			nodesArray: null,
+			edgesArray: null
         }
 	},
 	watch: {
 		numNodes: function (val) {
-			this.numNodes = parseInt(val)
+			this.valid = false
+			if (/^[1-9]+[0-9]?$/.test(val)){
+				this.numNodes = parseInt(val)
+				this.valid = true
+			} else {
+				this.numNodes = 0
+			}
 		}
 	},
 	methods: {
 		plot() {
+			this.edges = []
+			this.nodes = []
+			this.nodesArray = null
+			this.edgesArray = null
+
+
 			for (let i = 1; i <= this.numNodes; i++) {
 				const node = {
 					id: i,
 					label: i.toString()
 				}
 				this.nodes.push(node)
+
+				const split = (this.relations[i])
+					? this.relations[i].split(',')
+					: [""]
+
+				if (!!split[0] && split) {
+					split.forEach( element => {
+						const edge = {
+							from: i,
+							to: parseInt(element)
+						}
+						this.edges.push(edge)
+					})
+				}
 			}
+
 			const container = document.getElementById("relationPlot");
-			const nodesArray = new vis.DataSet(this.nodes)
-			console.info(nodesArray)
-			const edges = new vis.DataSet([
-				{from: 1,to: 3},
-				{from: 1,to: 2},
-				{from: 2,to: 4},
-				{from: 2,to: 1},
-				{from: 2,to: 5}
-			]);
-			const network = new vis.Network(container, {nodes: nodesArray, edges: edges}, {});
+			this.nodesArray = new vis.DataSet(this.nodes)
+			this.edgesArray = new vis.DataSet(this.edges)
+			const network = new vis.Network(container, {nodes: this.nodesArray, edges: this.edgesArray}, {});
 		}
 	}
 })
